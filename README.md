@@ -1,6 +1,6 @@
 # SunshineAppExport - FORK
 
-This is a SIMPLE fork of [MichaelMKenny's SunshineAppExport](https://github.com/MichaelMKenny/SunshineAppExport) addon that simply adds Sunshine prep-CMD DO and UNDO Path Selection in export prompt.
+This is a SIMPLE fork of [MichaelMKenny's SunshineAppExport](https://github.com/MichaelMKenny/SunshineAppExport) addon for Playnite that adds Sunshine prep-CMD DO and UNDO Path Selection in Game export prompt.
 
 **Updated Export Window**
 
