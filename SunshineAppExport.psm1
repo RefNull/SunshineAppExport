@@ -24,7 +24,7 @@ function SunshineExport {
     $windowCreationOptions.ShowMaximizeButton = $false
     
     $window = $PlayniteApi.Dialogs.CreateWindow($windowCreationOptions)
-    $window.Title = "Sunshine App Export"
+    $window.Title = "Sunshine App Export (RefNull Fork)"
     $window.SizeToContent = "WidthAndHeight"
     $window.ResizeMode = "NoResize"
     
@@ -39,6 +39,7 @@ function SunshineExport {
     </UserControl.Resources>
 
     <StackPanel Margin="16,16,16,16">
+        <!-- Sunshine apps.json Path -->
         <TextBlock Text="Enter your Sunshine apps.json path" 
         Margin="0,0,0,8" 
         VerticalAlignment="Center"/>
@@ -57,7 +58,7 @@ function SunshineExport {
             HorizontalAlignment="Stretch"
             VerticalAlignment="Top"/>
 
-            <Button x:Name="BrowseButton"
+            <Button x:Name="BrowseButtonPath"
             Grid.Column="1"
             Width="72"
             Height="36"
@@ -65,6 +66,61 @@ function SunshineExport {
             Content="Browse"/>
         </Grid>
 
+        <!-- Sunshine PREP DO Script -->
+        <TextBlock Text="[OPTIONAL] Enter your DO Script path" 
+        Margin="0,16,0,8" 
+        VerticalAlignment="Center"/>
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBox x:Name="SunshineDoPath"
+            Grid.Column="0"
+            Margin="0,0,8,0"
+            Width="320"
+            Height="36"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Top"/>
+
+            <Button x:Name="BrowseButtonDo"
+            Grid.Column="1"
+            Width="72"
+            Height="36"
+            HorizontalAlignment="Right"
+            Content="Browse"/>
+        </Grid>
+
+        <!-- Sunshine PREP-CMD UNDO Script -->
+        <TextBlock Text="[OPTIONAL] Enter your UNDO Script path" 
+        Margin="0,16,0,8" 
+        VerticalAlignment="Center"/>
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBox x:Name="SunshineUndoPath"
+            Grid.Column="0"
+            Margin="0,0,8,0"
+            Width="320"
+            Height="36"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Top"/>
+
+            <Button x:Name="BrowseButtonUndo"
+            Grid.Column="1"
+            Width="72"
+            Height="36"
+            HorizontalAlignment="Right"
+            Content="Browse"/>
+        </Grid>
+
+        <!-- Finished Message and Export Button -->
         <TextBlock x:Name="FinishedMessage" 
         Margin="0,0,0,24" 
         VerticalAlignment="Center"
@@ -83,24 +139,62 @@ function SunshineExport {
     $reader = [System.Xml.XmlNodeReader]::new($xaml)
     $window.Content = [Windows.Markup.XamlReader]::Load($reader)
 
-    $appsPath = "$Env:ProgramW6432\Sunshine\config\apps.json"
+    $sunshinePath = "$Env:ProgramW6432\Sunshine\config\apps.json"    
+    $inputFieldSunshineJSON = $window.Content.FindName("SunshinePath")
+    # Set the initial path if the user has not provided a path
+    if (-not $inputFieldSunshineJSON.Text) {
+        $inputFieldSunshineJSON.Text = $sunshinePath
+    }
 
-    $inputField = $window.Content.FindName("SunshinePath")
-    $inputField.Text = $appsPath   
+    $doPath = ""    
+    $inputFieldSunshineDO = $window.Content.FindName("SunshineDoPath")
+    # Set the initial path if the user has not provided a path
+    if (-not $inputFieldSunshineDO.Text) {
+        $inputFieldSunshineDO.Text = $doPath
+    }
+
+    $undoPath = ""    
+    $inputFieldSunshineUNDO = $window.Content.FindName("SunshineUndoPath")
+    # Set the initial path if the user has not provided a path
+    if (-not $inputFieldSunshineUNDO.Text) {
+        $inputFieldSunshineUNDO.Text = $undoPath
+    }
     
-    # Attach a click event handler to the Browse button
-    $browseButton = $window.Content.FindName("BrowseButton")
+    # Event handler - BrowseButtonPath
+    $browseButton = $window.Content.FindName("BrowseButtonPath")
     $browseButton.Add_Click({
             $openFileDialog = New-Object System.Windows.Forms.OpenFileDialog
-            $openFileDialog.InitialDirectory = Split-Path $inputField.Text -Parent
+            $openFileDialog.InitialDirectory = Split-Path $inputFieldSunshineJSON.Text -Parent
             $openFileDialog.Filter = "JSON files (*.json)|*.json|All files (*.*)|*.*"
-            $openFileDialog.Title = "Open apps.json"
-    
+            $openFileDialog.Title = "Select apps.json"
             if ($openFileDialog.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK) {
-                $inputField.Text = $openFileDialog.FileName
+                $inputFieldSunshineJSON.Text = $openFileDialog.FileName
             }
         })
-    
+
+    # Event handler - BrowseButtonDo
+    $browseButton = $window.Content.FindName("BrowseButtonDo")
+    $browseButton.Add_Click({
+            $openFileDialog = New-Object System.Windows.Forms.OpenFileDialog
+            $openFileDialog.InitialDirectory = Split-Path $inputFieldSunshineJSON.Text -Parent
+            $openFileDialog.Filter = "All files (*.*)|*.*"
+            $openFileDialog.Title = "Select DO Script"
+            if ($openFileDialog.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK) {
+                $inputFieldSunshineDO.Text = $openFileDialog.FileName
+            }
+        })
+
+    # Event handler - BrowseButtonUndo
+    $browseButton = $window.Content.FindName("BrowseButtonUndo")
+    $browseButton.Add_Click({
+            $openFileDialog = New-Object System.Windows.Forms.OpenFileDialog
+            $openFileDialog.InitialDirectory = Split-Path $inputFieldSunshineJSON.Text -Parent
+            $openFileDialog.Filter = "All files (*.*)|*.*"
+            $openFileDialog.Title = "Select UNDO Script"
+            if ($openFileDialog.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK) {
+                $inputFieldSunshineUNDO.Text = $openFileDialog.FileName
+            }
+        })
 
     # Attach a click event handler
     $button = $window.Content.FindName("OKButton")
@@ -109,13 +203,18 @@ function SunshineExport {
                 $window.Close()
             }
             else {
-                $appsPath = $inputField.Text
-                $appsPath = $appsPath -replace '"', ''
-                $shortcutsCreatedCount = DoWork($appsPath)
+                $sunshinePath = $inputFieldSunshineJSON.Text
+                $sunshinePath = $sunshinePath -replace '"', ''
+                $doPath = $inputFieldSunshineDO.Text
+                $doPath = $doPath -replace '"', ''
+                $undoPath = $inputFieldSunshineUNDO.Text
+                $undoPath = $undoPath -replace '"', ''
+                
+                $count = DoWork($sunshinePath)
                 $button.Content = "Dismiss"
 
                 $finishedMessage = $window.Content.FindName("FinishedMessage")
-                $finishedMessage.Text = ("Created {0} Sunshine app shortcuts" -f $shortcutsCreatedCount)
+                $finishedMessage.Text = ("Created {0} Sunshine app shortcuts" -f $count)
                 $finishedMessage.Visibility = "Visible"
             }
         })
@@ -138,7 +237,7 @@ function GetGameIdFromCmd([string]$cmd) {
     }
 }
 
-function DoWork([string]$appsPath) {
+function DoWork($sunshinePath, $doPath, $undoPath) {
     # Load assemblies
     Add-Type -AssemblyName System.Drawing
     $imageFormat = "System.Drawing.Imaging.ImageFormat" -as [type]
@@ -151,9 +250,9 @@ function DoWork([string]$appsPath) {
     }
 
     # Set creation counter
-    $shortcutsCreatedCount = 0
+    $count = 0
 
-    $json = ConvertFrom-Json (Get-Content $appsPath -Raw)
+    $json = ConvertFrom-Json (Get-Content $sunshinePath -Raw)
 
     foreach ($game in $PlayniteApi.MainView.SelectedGames) {
         $gameLaunchCmd = "`"$playniteExecutablePath`" --start $($game.id)"
@@ -218,6 +317,20 @@ function DoWork([string]$appsPath) {
                 Add-Member -InputObject $newApp -MemberType NoteProperty -Name "image-path" -Value $sunshineGameCoverPath
                 Add-Member -InputObject $newApp -MemberType NoteProperty -Name "id" -Value $id.ToString()
 
+                # Add the prep-cmd section with doPath and undoPath
+                $prepCmd = New-Object -TypeName psobject
+                Add-Member -InputObject $prepCmd -MemberType NoteProperty -Name "do" -Value $doPath
+                Add-Member -InputObject $prepCmd -MemberType NoteProperty -Name "undo" -Value $undoPath
+                Add-Member -InputObject $prepCmd -MemberType NoteProperty -Name "elevated" -Value "false"
+
+                Add-Member -InputObject $newApp -MemberType NoteProperty -Name "prep-cmd" -Value @($prepCmd)
+                
+                Add-Member -InputObject $newApp -MemberType NoteProperty -Name "exclude-global-prep-cmd" -Value "false"
+                Add-Member -InputObject $newApp -MemberType NoteProperty -Name "elevated" -Value "false"
+                Add-Member -InputObject $newApp -MemberType NoteProperty -Name "auto-detach" -Value "true"
+                Add-Member -InputObject $newApp -MemberType NoteProperty -Name "wait-all" -Value "true"
+                Add-Member -InputObject $newApp -MemberType NoteProperty -Name "exit-timeout" -Value "5"
+
                 $json.apps = $json.apps | ForEach-Object {
                     if ($_.detached) {
                         $gameId = GetGameIdFromCmd($_.detached[0])
@@ -247,7 +360,7 @@ function DoWork([string]$appsPath) {
             }
         }
 
-        $shortcutsCreatedCount++
+        $count++
     }
 
     $jsonObj = ConvertTo-Json $json -Depth 100
@@ -261,9 +374,9 @@ function DoWork([string]$appsPath) {
         return 0
     }
     else {
-        Start-Process powershell.exe  -Verb RunAs -ArgumentList "-ExecutionPolicy Bypass -Command `"Copy-Item -Path $env:TEMP\apps.json -Destination '$appsPath'`"" -WindowStyle Hidden
+        Start-Process powershell.exe  -Verb RunAs -ArgumentList "-ExecutionPolicy Bypass -Command `"Copy-Item -Path $env:TEMP\apps.json -Destination '$sunshinePath'`"" -WindowStyle Hidden
     }
 
 
-    return $shortcutsCreatedCount
+    return $count
 }
