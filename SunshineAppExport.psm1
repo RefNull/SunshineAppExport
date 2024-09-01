@@ -210,7 +210,7 @@ function SunshineExport {
                 $undoPath = $inputFieldSunshineUNDO.Text
                 $undoPath = $undoPath -replace '"', ''
                 
-                $count = DoWork($sunshinePath)
+                $count = DoWork -sunshinePath $sunshinePath -doPath $doPath -undoPath $undoPath
                 $button.Content = "Dismiss"
 
                 $finishedMessage = $window.Content.FindName("FinishedMessage")
