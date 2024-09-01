@@ -3,7 +3,7 @@ Packages:
   - Version: 1.1.3
     RequiredApiVersion: 6.0.0
     ReleaseDate: 2024-09-01
-    PackageUrl: https://github.com/RefNull/SunshineAppExport/releases/download/1.1.3/SunshineAppExport_1_1_3.pext
+    PackageUrl: https://github.com/RefNull/SunshineAppExport/releases/download/1.1.3/SunshineAppExport_RNFork_1_1_3.pext
     Changelog:
       - Introduced prep-cmd do and undo script selection to dialog prompt.
       - Replaced dialog_screenshot.jpg with dialog_screenshot_fork.jpg.
